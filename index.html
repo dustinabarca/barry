@@ -495,7 +495,7 @@
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder){
       try{
         mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode:'environment', width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+          video: { facingMode:'environment' },
           audio: true
         });
         renderCameraView();
@@ -526,7 +526,7 @@
   function renderCameraView(){
     card.innerHTML = `
       ${masthead('Recording')}
-      <video id="liveView" autoplay muted playsinline style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:3px;border:1px solid var(--sage);background:#000;display:block;"></video>
+      <video id="liveView" autoplay muted playsinline style="width:100%;height:auto;object-fit:contain;border-radius:3px;border:1px solid var(--sage);background:#000;display:block;"></video>
       <div style="display:flex;justify-content:center;margin-top:18px">
         <button id="recBtn" class="rec-btn" aria-label="Record"></button>
       </div>
