@@ -1,0 +1,585 @@
+<!-- v1.2 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Barry Coach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --forest:#173F35;
+    --burgundy:#8B2F38;
+    --charcoal:#202629;
+    --slate:#626B70;
+    --sage:#C7CFCC;
+    --white:#FBF9F4;
+    --sage-faint:#E7EBE9;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100dvh;
+    background:var(--white);
+    color:var(--charcoal);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{
+    position:relative;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:28px 20px calc(28px + env(safe-area-inset-bottom));
+  }
+  .card{
+    position:relative;
+    width:100%;
+    max-width:390px;
+    background:var(--white);
+    border:1px solid var(--sage);
+    border-radius:3px;
+    padding:26px 24px 24px;
+  }
+  /* signature — print registration marks at opposing corners */
+  .card::before, .card::after{
+    content:'+';
+    position:absolute;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    line-height:1;
+    color:var(--sage);
+  }
+  .card::before{ top:-8px; left:-8px; }
+  .card::after{ bottom:-8px; right:-8px; }
+
+  .masthead{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:12px;
+  }
+  .brand{
+    font-family:'Inter',sans-serif; font-weight:700; font-size:11px;
+    letter-spacing:0.12em; color:var(--forest); text-transform:uppercase;
+  }
+  .tag{
+    font-family:'Inter',sans-serif; font-weight:500; font-size:11px;
+    letter-spacing:0.08em; color:var(--slate); text-transform:uppercase;
+  }
+  .rule{ height:1px; background:var(--sage); margin-bottom:22px; }
+
+  h1{
+    font-family:'Libre Caslon Display',serif;
+    font-weight:400;
+    font-size:27px;
+    line-height:1.26;
+    letter-spacing:-0.005em;
+    margin:0 0 14px;
+    color:var(--forest);
+  }
+  .sub{
+    font-family:'Libre Caslon Text',serif;
+    font-style:italic;
+    font-weight:400;
+    font-size:14.5px;
+    line-height:1.55;
+    color:var(--charcoal);
+    margin:0 0 26px;
+    opacity:0.85;
+  }
+  .actions{ display:flex; flex-direction:column; gap:10px; }
+  .btn-primary{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--white);
+    background:var(--burgundy);
+    border:none;
+    border-radius:4px;
+    padding:16px 18px;
+    cursor:pointer;
+    width:100%;
+  }
+  .btn-primary:active{ opacity:0.88; }
+  .btn-ghost{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--charcoal);
+    background:var(--white);
+    border:1px solid var(--sage);
+    border-radius:4px;
+    padding:13px 18px;
+    cursor:pointer;
+    width:100%;
+  }
+  .btn-ghost:hover{ border-color:var(--slate); }
+
+  .taps{ display:flex; flex-direction:column; gap:16px; margin-bottom:22px; }
+  .tap-row .label{
+    font-family:'Inter',sans-serif;
+    font-size:11px; text-transform:uppercase; letter-spacing:0.1em;
+    color:var(--slate); margin-bottom:8px; display:block; font-weight:600;
+  }
+  .pills{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pill{
+    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600;
+    letter-spacing:0.02em; text-transform:uppercase;
+    color:var(--charcoal); background:var(--white);
+    border:1px solid var(--sage); border-radius:4px;
+    padding:9px 13px; cursor:pointer;
+  }
+  .pill.active{ color:var(--white); background:var(--forest); border-color:var(--forest); }
+
+  .foot{
+    margin-top:18px; display:flex; gap:16px;
+    font-family:'Inter',sans-serif;
+    font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--slate);
+  }
+  .foot button{
+    background:none; border:none; color:inherit; font:inherit; cursor:pointer;
+    padding:4px 0;
+  }
+  .foot button:hover{ color:var(--forest); }
+
+  .sheet{
+    position:fixed; inset:0; z-index:10; background:rgba(32,38,41,0.45);
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .sheet-card{
+    width:100%; max-width:430px; background:var(--white);
+    border-top:1px solid var(--sage);
+    padding:22px 22px calc(26px + env(safe-area-inset-bottom));
+    max-height:80dvh; overflow-y:auto;
+  }
+  .sheet h2{
+    font-family:'Libre Caslon Display',serif; font-weight:400; font-size:20px;
+    color:var(--forest); margin:0 0 6px;
+  }
+  .sheet p.hint{ font-family:'Inter',sans-serif; font-size:13px; color:var(--slate); margin:0 0 20px; line-height:1.55; }
+  .stat-row{ display:flex; gap:14px; margin-bottom:20px; }
+  .stat{
+    flex:1; background:var(--white); border:1px solid var(--sage);
+    border-radius:3px; padding:14px;
+  }
+  .stat .n{ font-family:'Libre Caslon Display',serif; font-size:26px; color:var(--forest); }
+  .stat .l{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--slate); margin-top:4px; }
+  .dots{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
+  .dot30{ width:9px; height:9px; border-radius:2px; background:var(--sage-faint); }
+  .dot30.on{ background:var(--forest); }
+  .dot30.skip{ background:transparent; border:1px solid var(--sage); }
+  .set-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 0; border-bottom:1px solid var(--sage);
+  }
+  .set-row:last-of-type{ border-bottom:none; }
+  .set-row .lab{ font-family:'Inter',sans-serif; font-size:14px; color:var(--charcoal); font-weight:500; }
+  .set-row .sub2{ font-family:'Inter',sans-serif; font-size:12px; color:var(--slate); margin-top:2px; }
+  select{
+    background:var(--white); color:var(--charcoal);
+    border:1px solid var(--sage); border-radius:4px; padding:8px 10px;
+    font-family:'Inter',sans-serif; font-size:14px;
+  }
+  .close-x{
+    position:absolute; top:16px; right:16px; background:none; border:none;
+    color:var(--slate); font-size:20px; cursor:pointer; line-height:1;
+  }
+  .danger{ color:var(--burgundy); font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px; letter-spacing:0.04em; text-transform:uppercase; background:none; border:none; cursor:pointer; padding:14px 0 0; }
+  video.preview{
+    width:100%; border-radius:3px; margin-bottom:18px; display:block; background:#000;
+    border:1px solid var(--sage);
+  }
+  .loading{
+    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    color:var(--slate); font-family:'Inter',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
+  }
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading">warming up the viewfinder…</div>
+
+<div class="stage hidden" id="stage">
+  <div class="card" id="card"></div>
+  <div class="foot">
+    <button id="btnTaps">Adjust context</button>
+    <button id="btnSettings">Nudge time</button>
+    <button id="btnLog">This month</button>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="video/*" capture="environment" class="hidden" />
+
+<script>
+(function(){
+
+  // ---------- assignment bank ----------
+  const BANK = [
+    {id:'h-l-1', where:['home'], effort:1, text:"Film him right where he already is.", sub:"No repositioning. Ten seconds. Don't ask him to move."},
+    {id:'h-l-2', where:['home'], effort:1, text:"Get the door light landing on the floor near him.", sub:"Just the light and whatever's sitting in it."},
+    {id:'h-l-3', where:['home'], effort:1, text:"Zoom in on his paws for a few seconds.", sub:"Doesn't matter what he's doing with them."},
+    {id:'h-l-4', where:['home'], effort:1, text:"Record the sound of him breathing or sighing.", sub:"Eyes closed is fine — this one's about the sound."},
+    {id:'h-l-5', where:['home'], effort:1, text:"Film him in his usual spot, from the doorway.", sub:"Don't get closer. Just capture the room he's in."},
+    {id:'h-o-1', where:['home'], effort:2, text:"Get to his eye level and film him watching out the window.", sub:"Hold the shot longer than feels natural."},
+    {id:'h-o-2', where:['home'], effort:2, text:"Follow him for a few steps as he moves between rooms.", sub:"One continuous shot. No cuts."},
+    {id:'h-o-3', where:['home'], effort:2, text:"Film his face straight on while he's alert.", sub:"Say his name once, then just watch what happens."},
+    {id:'h-o-4', where:['home'], effort:2, text:"Golden light is hitting the window. Get low and film 10 seconds of him in it.", sub:"Don't edit it."},
+    {id:'h-o-5', where:['home'], effort:2, text:"Catch him reacting to a word he knows.", sub:"Walk, treat, outside — whatever gets his ears up."},
+    {id:'h-g-1', where:['home'], effort:3, text:"One fifteen-second shot. One angle. No cuts.", sub:"Pick the best light in the house right now."},
+    {id:'h-g-2', where:['home'], effort:3, text:"Film the thing he does that only he does.", sub:"The weird little habit. You know the one."},
+    {id:'h-g-3', where:['home'], effort:3, text:"Two angles of the same moment — wide, then close.", sub:"Don't restage it between takes."},
+    {id:'o-l-1', where:['out'], effort:1, text:"Film the first three seconds after you unclip the leash.", sub:"Just that first burst of movement."},
+    {id:'o-l-2', where:['out'], effort:1, text:"Catch him sniffing something like it's the most important thing in the world.", sub:"You already know the face."},
+    {id:'o-o-1', where:['out'], effort:2, text:"Get him ahead of you on the path, low angle.", sub:"Let him lead the shot."},
+    {id:'o-o-2', where:['out'], effort:2, text:"Low angle against the sky while he's mid-stride.", sub:"Aim up. Let the sky do the work."},
+    {id:'o-o-3', where:['out'], effort:2, text:"Film the moment he notices something in the distance.", sub:"The ears, the posture, the pause — that's the shot."},
+  ];
+
+  const ENERGY_CAP = {low:1, ok:2, good:3};
+  const MIN_CAP = {2:1, 5:2, 15:3};
+
+  // ---------- storage ----------
+  const OUTCOMES_KEY = 'barry:outcomes';
+  const SETTINGS_KEY = 'barry:settings';
+  let outcomes = [];
+  let settings = {weekdayHour:17, weekdayMinute:0, weekendHour:11, weekendMinute:0, lastContext:{where:'home', energy:'low', minutes:5}};
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(OUTCOMES_KEY);
+      if(raw) outcomes = JSON.parse(raw);
+    }catch(e){ outcomes = []; }
+    try{
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if(raw) settings = Object.assign(settings, JSON.parse(raw));
+    }catch(e){ /* keep defaults */ }
+  }
+  function saveOutcomes(){
+    try{ localStorage.setItem(OUTCOMES_KEY, JSON.stringify(outcomes)); }
+    catch(e){ console.error('save outcomes failed', e); }
+  }
+  function saveSettings(){
+    try{ localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); }
+    catch(e){ console.error('save settings failed', e); }
+  }
+
+  function uid(){
+    return (crypto.randomUUID ? crypto.randomUUID() : 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2));
+  }
+  function todayStr(){
+    const d = new Date();
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function daysAgo(dateStr){
+    const then = new Date(dateStr+'T00:00:00');
+    const now = new Date(todayStr()+'T00:00:00');
+    return Math.round((now-then)/86400000);
+  }
+
+  // ---------- selection ----------
+  function pickAssignment(context, tier){
+    const cap = Math.min(ENERGY_CAP[context.energy], MIN_CAP[context.minutes]);
+    const wantEffort = tier === 'smaller' ? 1 : null;
+    let pool = BANK.filter(a => a.where.includes(context.where) && a.effort <= cap && (wantEffort ? a.effort===wantEffort : true));
+
+    const refusedRecently = new Set(
+      outcomes.filter(o => (o.outcome==='not_now' || o.outcome==='declined_final') && daysAgo(o.date) < 14)
+              .map(o => o.assignmentId)
+    );
+    let filtered = pool.filter(a => !refusedRecently.has(a.id));
+    if(filtered.length) pool = filtered;
+
+    const recent = outcomes.slice().sort((a,b)=> (a.date+a.tapAt) < (b.date+b.tapAt) ? 1 : -1).slice(0,2);
+    const bothRefused = recent.length===2 && recent.every(o => o.outcome==='not_now' || o.outcome==='declined_final');
+    if(bothRefused && tier!=='smaller'){
+      const smallest = pool.filter(a=>a.effort===1);
+      if(smallest.length) pool = smallest;
+    }
+
+    if(!pool.length) pool = BANK.filter(a => a.where.includes(context.where));
+    if(!pool.length) pool = BANK;
+
+    const lastShown = {};
+    outcomes.forEach(o => { lastShown[o.assignmentId] = o.date; });
+    pool = pool.slice().sort((a,b)=>{
+      const da = lastShown[a.id] || '0000-00-00';
+      const db = lastShown[b.id] || '0000-00-00';
+      return da.localeCompare(db);
+    });
+    return pool[0];
+  }
+
+  function bankNumber(a){
+    const idx = BANK.findIndex(x=>x.id===a.id) + 1;
+    return 'No. ' + String(idx).padStart(3,'0');
+  }
+
+  // ---------- app state ----------
+  let context = Object.assign({}, settings.lastContext);
+  let currentAssignment = null;
+  let currentTier = 'primary';
+  let pendingTapAt = null;
+  let pendingObjectUrl = null;
+
+  function todaysEntries(){ return outcomes.filter(o => o.date === todayStr()); }
+  function dayIsClosed(){
+    return todaysEntries().some(o => ['filmed','smaller_accepted','declined_final'].includes(o.outcome));
+  }
+
+  function logEntry(partial){
+    const entry = Object.assign({
+      id: uid(), date: todayStr(), tapAt: new Date().toISOString(),
+    }, partial);
+    outcomes.push(entry);
+    saveOutcomes();
+    return entry;
+  }
+
+  // ---------- render ----------
+  const card = document.getElementById('card');
+
+  function timeLabel(){
+    const d = new Date();
+    const day = d.toLocaleDateString(undefined,{weekday:'short'}).toUpperCase();
+    let h = d.getHours(); const m = String(d.getMinutes()).padStart(2,'0');
+    const ap = h>=12 ? 'PM' : 'AM'; h = h%12; if(h===0) h=12;
+    return h+':'+m+ap+' · '+day;
+  }
+
+  function masthead(tag){
+    return `<div class="masthead"><span class="brand">Barry Co.</span><span class="tag">${tag}</span></div><div class="rule"></div>`;
+  }
+
+  function renderClosed(){
+    const success = todaysEntries().some(o => ['filmed','smaller_accepted'].includes(o.outcome));
+    card.innerHTML = `
+      ${masthead('Logged')}
+      <h1>${success ? "Got today's clip." : "That's alright."}</h1>
+      <p class="sub">${success ? "It's in the archive. Nothing to post, nothing to edit." : "See you tomorrow."}</p>
+    `;
+  }
+
+  function renderTapsGate(){
+    card.innerHTML = `
+      ${masthead(timeLabel())}
+      <h1>Where's Barry right now?</h1>
+      <div class="taps">
+        <div class="tap-row">
+          <span class="label">Where</span>
+          <div class="pills" data-group="where">
+            ${pill('home','Home')}${pill('out','Out / walk')}
+          </div>
+        </div>
+        <div class="tap-row">
+          <span class="label">Energy</span>
+          <div class="pills" data-group="energy">
+            ${pill('low','Low')}${pill('ok','Okay')}${pill('good','Good')}
+          </div>
+        </div>
+        <div class="tap-row">
+          <span class="label">Minutes you have</span>
+          <div class="pills" data-group="minutes">
+            ${pill('2','2')}${pill('5','5')}${pill('15','15')}
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" id="btnGo">Show today's assignment</button>
+    `;
+    function pill(val,label){
+      const groupKey = {home:'where',out:'where',low:'energy',ok:'energy',good:'energy'}[val] || 'minutes';
+      const active = String(context[groupKey==='minutes'?'minutes':groupKey]) === String(val);
+      return `<button type="button" class="pill${active?' active':''}" data-val="${val}" data-group="${groupKey}">${label}</button>`;
+    }
+    card.querySelectorAll('.pill').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const group = btn.dataset.group;
+        const key = group === 'minutes' ? 'minutes' : group;
+        context[key] = group==='minutes' ? Number(btn.dataset.val) : btn.dataset.val;
+        settings.lastContext = context; saveSettings();
+        renderTapsGate();
+      });
+    });
+    document.getElementById('btnGo').addEventListener('click', ()=>{
+      currentAssignment = pickAssignment(context, 'primary');
+      currentTier = 'primary';
+      renderAssignment();
+    });
+  }
+
+  function renderAssignment(){
+    const a = currentAssignment;
+    const smallerLabel = currentTier === 'smaller';
+    card.innerHTML = `
+      ${masthead(smallerLabel ? 'Alt · ' + bankNumber(a) : bankNumber(a))}
+      <h1>${a.text}</h1>
+      <p class="sub">${a.sub}</p>
+      <div class="actions">
+        <button class="btn-primary" id="btnFilm">Film it</button>
+        <button class="btn-ghost" id="btnNotNow">${smallerLabel ? 'Not today' : 'Not now'}</button>
+      </div>
+    `;
+    document.getElementById('btnFilm').addEventListener('click', onFilmTap);
+    document.getElementById('btnNotNow').addEventListener('click', onNotNow);
+  }
+
+  function onFilmTap(){
+    pendingTapAt = new Date().toISOString();
+    document.getElementById('fileInput').click();
+  }
+
+  function onNotNow(){
+    if(currentTier === 'primary'){
+      logEntry({assignmentId: currentAssignment.id, assignmentText: currentAssignment.text, context: Object.assign({},context), outcome:'not_now', tier:'primary'});
+      currentAssignment = pickAssignment(context, 'smaller');
+      currentTier = 'smaller';
+      renderAssignment();
+    } else {
+      logEntry({assignmentId: currentAssignment.id, assignmentText: currentAssignment.text, context: Object.assign({},context), outcome:'declined_final', tier:'smaller'});
+      renderClosed();
+    }
+  }
+
+  function renderCaptured(objectUrl){
+    card.innerHTML = `
+      ${masthead('Logged')}
+      <h1>That's today's clip.</h1>
+      <video class="preview" src="${objectUrl}" playsinline muted autoplay loop controls></video>
+      <p class="sub">It's still just on your phone — nothing was uploaded or saved anywhere by Barry.</p>
+      <button class="btn-primary" id="btnDone">Done</button>
+    `;
+    document.getElementById('btnDone').addEventListener('click', renderClosed);
+  }
+
+  document.getElementById('fileInput').addEventListener('change', function(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file){ return; }
+    logEntry({
+      assignmentId: currentAssignment.id, assignmentText: currentAssignment.text,
+      context: Object.assign({},context),
+      outcome: currentTier==='smaller' ? 'smaller_accepted' : 'filmed',
+      tier: currentTier, tapAt: pendingTapAt, capturedAt: new Date().toISOString()
+    });
+    if(pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl);
+    pendingObjectUrl = URL.createObjectURL(file);
+    renderCaptured(pendingObjectUrl);
+    e.target.value = '';
+  });
+
+  // ---------- sheets: taps / settings / log ----------
+  function openSheet(html){
+    const wrap = document.createElement('div');
+    wrap.className = 'sheet';
+    wrap.id = 'sheetWrap';
+    wrap.innerHTML = `<div class="sheet-card" style="position:relative">
+      <button class="close-x" id="sheetClose">✕</button>${html}</div>`;
+    document.body.appendChild(wrap);
+    wrap.addEventListener('click', (e)=>{ if(e.target===wrap) wrap.remove(); });
+    document.getElementById('sheetClose').addEventListener('click', ()=>wrap.remove());
+    return wrap;
+  }
+
+  document.getElementById('btnTaps').addEventListener('click', ()=>{
+    if(dayIsClosed()){
+      openSheet(`<h2>Already answered today</h2><p class="hint">Context adjusts again tomorrow — or clear the log under "nudge time" if you want a redo today.</p>`);
+      return;
+    }
+    renderTapsGate();
+  });
+
+  document.getElementById('btnSettings').addEventListener('click', ()=>{
+    const s = settings;
+    const wrap = openSheet(`
+      <h2>Nudge time</h2>
+      <p class="hint">Barry can't send push notifications from this prototype yet — set the time you'd like to be reminded, and use it for your own phone alarm or reminder until that's built.</p>
+      <div class="set-row">
+        <div><div class="lab">Weekdays</div><div class="sub2">Default 5:00pm</div></div>
+        <select id="wdH"></select>
+      </div>
+      <div class="set-row">
+        <div><div class="lab">Weekends</div><div class="sub2">Default 11:00am</div></div>
+        <select id="weH"></select>
+      </div>
+      <button class="danger" id="clearLog">Clear all logged data</button>
+    `);
+    function fillHours(sel, current){
+      for(let h=0; h<24; h++){
+        const opt = document.createElement('option');
+        const label = (h%12===0?12:h%12) + (h<12?'am':'pm');
+        opt.value = h; opt.textContent = label;
+        if(h===current) opt.selected = true;
+        sel.appendChild(opt);
+      }
+    }
+    fillHours(document.getElementById('wdH'), s.weekdayHour);
+    fillHours(document.getElementById('weH'), s.weekendHour);
+    document.getElementById('wdH').addEventListener('change', e=>{ settings.weekdayHour = Number(e.target.value); saveSettings(); });
+    document.getElementById('weH').addEventListener('change', e=>{ settings.weekendHour = Number(e.target.value); saveSettings(); });
+    document.getElementById('clearLog').addEventListener('click', async ()=>{
+      if(confirm('Clear all logged assignments and outcomes? This can\'t be undone.')){
+        outcomes = [];
+        try{ localStorage.removeItem(OUTCOMES_KEY); }catch(e){}
+        wrap.remove();
+        boot();
+      }
+    });
+  });
+
+  document.getElementById('btnLog').addEventListener('click', ()=>{
+    const now = new Date();
+    const monthEntries = outcomes.filter(o=>{
+      const d = new Date(o.date+'T00:00:00');
+      return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    });
+    const activeDays = new Set(monthEntries.map(o=>o.date));
+    const filmedDays = new Set(monthEntries.filter(o=>['filmed','smaller_accepted'].includes(o.outcome)).map(o=>o.date));
+    const rate = activeDays.size ? Math.round(100*filmedDays.size/activeDays.size) : 0;
+
+    let dots = '';
+    for(let i=29;i>=0;i--){
+      const d = new Date(); d.setDate(d.getDate()-i);
+      const ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      if(outcomes.some(o=>o.date===ds && ['filmed','smaller_accepted'].includes(o.outcome))) dots += '<span class="dot30 on"></span>';
+      else if(activeDays.has(ds)) dots += '<span class="dot30"></span>';
+      else dots += '<span class="dot30 skip"></span>';
+    }
+
+    openSheet(`
+      <h2>This month</h2>
+      <p class="hint">No streaks here — just what happened.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="n">${filmedDays.size}</div><div class="l">Clips captured</div></div>
+        <div class="stat"><div class="n">${rate}%</div><div class="l">Start rate</div></div>
+      </div>
+      <div class="dots">${dots}</div>
+      <p class="hint" style="margin-top:-6px">Filled = filmed · outline = shown, not filmed · empty = quiet day</p>
+    `);
+  });
+
+  // ---------- boot ----------
+  async function boot(){
+    loadState();
+    context = Object.assign({where:'home', energy:'low', minutes:5}, settings.lastContext);
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('stage').classList.remove('hidden');
+    if(dayIsClosed()){
+      renderClosed();
+    } else {
+      renderTapsGate();
+    }
+  }
+  boot();
+
+})();
+</script>
+</body>
+</html>
