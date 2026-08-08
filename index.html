@@ -185,6 +185,30 @@
   .hist-text{ font-family:'Inter',sans-serif; font-size:13.5px; color:var(--charcoal); line-height:1.4; }
   .hist-outcome{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--slate); margin-top:3px; }
   .hist-outcome.on{ color:var(--forest); }
+  .spark-input{
+    flex:1; background:var(--white); color:var(--charcoal);
+    border:1px solid var(--sage); border-radius:4px; padding:12px 14px;
+    font-family:'Inter',sans-serif; font-size:13.5px;
+  }
+  .spark-add-row{ display:flex; gap:8px; }
+  .spark-row{ display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-bottom:1px solid var(--sage); }
+  .spark-row:last-child{ border-bottom:none; }
+  .spark-x{ background:none; border:none; color:var(--slate); font-size:13px; cursor:pointer; padding:2px; }
+  .good-toggle{
+    background:none; border:none; padding:0; margin-top:5px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
+    color:var(--slate);
+  }
+  .good-toggle.on{ color:var(--burgundy); }
+  .rec-btn{
+    width:66px; height:66px; border-radius:50%;
+    border:3px solid var(--charcoal); background:none; position:relative; cursor:pointer; padding:0;
+  }
+  .rec-btn::before{
+    content:''; position:absolute; inset:6px; border-radius:50%; background:var(--burgundy);
+    transition:border-radius .15s ease, inset .15s ease;
+  }
+  .rec-btn.recording::before{ border-radius:6px; inset:20px; }
   .set-row{
     display:flex; align-items:center; justify-content:space-between;
     padding:12px 0; border-bottom:1px solid var(--sage);
@@ -259,6 +283,8 @@
   // ---------- storage ----------
   const OUTCOMES_KEY = 'barry:outcomes';
   const SETTINGS_KEY = 'barry:settings';
+  const SPARKS_KEY = 'barry:sparks';
+  let sparks = [];
   let outcomes = [];
   let settings = {weekdayHour:17, weekdayMinute:0, weekendHour:11, weekendMinute:0, lastContext:{where:'home', energy:'low', minutes:5}};
 
@@ -271,6 +297,14 @@
       const raw = localStorage.getItem(SETTINGS_KEY);
       if(raw) settings = Object.assign(settings, JSON.parse(raw));
     }catch(e){ /* keep defaults */ }
+    try{
+      const raw = localStorage.getItem(SPARKS_KEY);
+      if(raw) sparks = JSON.parse(raw);
+    }catch(e){ sparks = []; }
+  }
+  function saveSparks(){
+    try{ localStorage.setItem(SPARKS_KEY, JSON.stringify(sparks)); }
+    catch(e){ console.error('save sparks failed', e); }
   }
   function saveOutcomes(){
     try{ localStorage.setItem(OUTCOMES_KEY, JSON.stringify(outcomes)); }
@@ -339,6 +373,7 @@
   let pendingTapAt = null;
   let pendingObjectUrl = null;
   let pendingFile = null;
+  let lastLoggedEntryId = null;
 
   function todaysEntries(){ return outcomes.filter(o => o.date === todayStr()); }
   function dayIsClosed(){
@@ -449,9 +484,109 @@
     document.getElementById('btnNotNow').addEventListener('click', onNotNow);
   }
 
-  function onFilmTap(){
+  let mediaStream = null;
+  let mediaRecorder = null;
+  let recordedChunks = [];
+  let recordTimerInterval = null;
+  let recordStartedAt = null;
+
+  async function onFilmTap(){
     pendingTapAt = new Date().toISOString();
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder){
+      try{
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode:'environment', width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:30} },
+          audio: true
+        });
+        renderCameraView();
+        return;
+      }catch(e){
+        // permission denied, or unsupported — fall through to native handoff below
+      }
+    }
     document.getElementById('fileInput').click();
+  }
+
+  function pickMimeType(){
+    const candidates = [
+      'video/mp4;codecs=h264,aac', 'video/mp4',
+      'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'
+    ];
+    for(const c of candidates){
+      if(window.MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) return c;
+    }
+    return '';
+  }
+
+  function stopStream(){
+    if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream = null; }
+    if(recordTimerInterval){ clearInterval(recordTimerInterval); recordTimerInterval = null; }
+  }
+
+  function renderCameraView(){
+    card.innerHTML = `
+      ${masthead('Recording')}
+      <video id="liveView" autoplay muted playsinline style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:3px;border:1px solid var(--sage);background:#000;display:block;"></video>
+      <div style="display:flex;justify-content:center;margin-top:18px">
+        <button id="recBtn" class="rec-btn" aria-label="Record"></button>
+      </div>
+      <p class="sub" id="recStatus" style="text-align:center;margin-top:10px">Tap the button to start recording</p>
+      <button class="btn-ghost" id="btnCancelCam" style="margin-top:14px">Cancel</button>
+    `;
+    document.getElementById('liveView').srcObject = mediaStream;
+    document.getElementById('recBtn').addEventListener('click', toggleRecording);
+    document.getElementById('btnCancelCam').addEventListener('click', ()=>{
+      stopStream();
+      renderAssignment();
+    });
+  }
+
+  function toggleRecording(){
+    const btn = document.getElementById('recBtn');
+    if(!mediaRecorder || mediaRecorder.state === 'inactive'){
+      recordedChunks = [];
+      const mimeType = pickMimeType();
+      try{
+        mediaRecorder = mimeType ? new MediaRecorder(mediaStream, {mimeType, videoBitsPerSecond:8000000}) : new MediaRecorder(mediaStream);
+      }catch(e){
+        mediaRecorder = new MediaRecorder(mediaStream);
+      }
+      mediaRecorder.ondataavailable = (e)=>{ if(e.data && e.data.size>0) recordedChunks.push(e.data); };
+      mediaRecorder.onstop = onRecordingStopped;
+      mediaRecorder.start();
+      btn.classList.add('recording');
+      recordStartedAt = Date.now();
+      recordTimerInterval = setInterval(()=>{
+        const secs = Math.floor((Date.now()-recordStartedAt)/1000);
+        const el = document.getElementById('recStatus');
+        if(el) el.textContent = '0:'+String(secs).padStart(2,'0')+' — tap to stop';
+        if(secs >= 20) toggleRecording(); // safety auto-stop
+      }, 250);
+    } else {
+      mediaRecorder.stop();
+      if(recordTimerInterval){ clearInterval(recordTimerInterval); recordTimerInterval = null; }
+    }
+  }
+
+  function onRecordingStopped(){
+    const mimeType = mediaRecorder.mimeType || 'video/mp4';
+    const blob = new Blob(recordedChunks, {type: mimeType});
+    const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+    const file = new File([blob], 'barry-clip.'+ext, {type: mimeType});
+    stopStream();
+
+    const entry = logEntry({
+      assignmentId: currentAssignment.id, assignmentText: currentAssignment.text,
+      context: Object.assign({},context),
+      outcome: currentTier==='smaller' ? 'smaller_accepted' : 'filmed',
+      tier: currentTier, tapAt: pendingTapAt, capturedAt: new Date().toISOString()
+    });
+    lastLoggedEntryId = entry.id;
+
+    if(pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl);
+    pendingFile = file;
+    pendingObjectUrl = URL.createObjectURL(file);
+    renderCaptured(pendingObjectUrl);
   }
 
   function onNotNow(){
@@ -487,21 +622,33 @@
       <video class="preview" src="${objectUrl}" playsinline muted autoplay loop controls></video>
       <button class="btn-primary" id="btnSave">Save to Photos</button>
       <p class="sub" style="margin-top:14px">If the button doesn't open a save option, press and hold the video above and choose "Save Video" — do this before you leave this screen, or the clip can't be recovered.</p>
-      <button class="btn-ghost" id="btnDone" style="margin-top:6px">Done</button>
+      <div class="tap-row" style="margin-top:18px">
+        <span class="label">Remind you of something? (optional)</span>
+        <input type="text" id="sparkInput" class="spark-input" placeholder="e.g. that reel PJ sent me..." maxlength="140" />
+      </div>
+      <button class="btn-ghost" id="btnDone" style="margin-top:14px">Done</button>
     `;
     document.getElementById('btnSave').addEventListener('click', (e)=>onSaveToPhotos(e.currentTarget));
-    document.getElementById('btnDone').addEventListener('click', renderClosed);
+    document.getElementById('btnDone').addEventListener('click', ()=>{
+      const val = document.getElementById('sparkInput').value.trim();
+      if(val){
+        sparks.push({id: uid(), date: todayStr(), text: val, outcomeId: lastLoggedEntryId});
+        saveSparks();
+      }
+      renderClosed();
+    });
   }
 
   document.getElementById('fileInput').addEventListener('change', function(e){
     const file = e.target.files && e.target.files[0];
     if(!file){ return; }
-    logEntry({
+    const entry = logEntry({
       assignmentId: currentAssignment.id, assignmentText: currentAssignment.text,
       context: Object.assign({},context),
       outcome: currentTier==='smaller' ? 'smaller_accepted' : 'filmed',
       tier: currentTier, tapAt: pendingTapAt, capturedAt: new Date().toISOString()
     });
+    lastLoggedEntryId = entry.id;
     if(pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl);
     pendingFile = file;
     pendingObjectUrl = URL.createObjectURL(file);
@@ -562,7 +709,9 @@
     });
   });
 
-  document.getElementById('btnLog').addEventListener('click', ()=>{
+  document.getElementById('btnLog').addEventListener('click', openLogSheet);
+
+  function openLogSheet(){
     const now = new Date();
     const monthEntries = outcomes.filter(o=>{
       const d = new Date(o.date+'T00:00:00');
@@ -586,17 +735,26 @@
     const historyRows = history.length ? history.map(o=>{
       const d = new Date(o.date+'T00:00:00');
       const dayLabel = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+      const timeLabel = o.capturedAt ? new Date(o.capturedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}) : '';
       const filmed = o.outcome==='filmed' || o.outcome==='smaller_accepted';
+      const goodBtn = filmed ? `<button class="good-toggle${o.flagged?' on':''}" data-id="${o.id}">${o.flagged ? '★ Good one' : '☆ Mark good'}</button>` : '';
       return `<div class="hist-row">
-        <div class="hist-date">${dayLabel}</div>
+        <div class="hist-date">${dayLabel}${timeLabel?'<br>'+timeLabel:''}</div>
         <div class="hist-body">
           <div class="hist-text">${o.assignmentText}</div>
           <div class="hist-outcome${filmed?' on':''}">${OUTCOME_LABEL[o.outcome] || o.outcome}</div>
+          ${goodBtn}
         </div>
       </div>`;
     }).join('') : `<p class="hint">Nothing logged yet.</p>`;
 
-    openSheet(`
+    const sparkRows = sparks.length ? sparks.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(s=>{
+      const d = new Date(s.date+'T00:00:00');
+      const dayLabel = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+      return `<div class="spark-row"><div class="hist-date">${dayLabel}</div><div class="hist-body"><div class="hist-text">${s.text}</div></div><button class="spark-x" data-id="${s.id}">✕</button></div>`;
+    }).join('') : `<p class="hint">No sparks yet — jot one when a clip reminds you of something.</p>`;
+
+    const wrap = openSheet(`
       <h2>This month</h2>
       <p class="hint">No streaks here — just what happened.</p>
       <div class="stat-row">
@@ -608,8 +766,35 @@
       <div class="rule" style="margin:20px 0"></div>
       <p class="hint" style="margin-bottom:12px">History</p>
       <div class="hist-list">${historyRows}</div>
+      <div class="rule" style="margin:20px 0"></div>
+      <p class="hint" style="margin-bottom:10px">Sparks — things a clip reminded you of</p>
+      <div class="spark-add-row">
+        <input type="text" id="newSparkInput" class="spark-input" placeholder="Add one..." maxlength="140" />
+        <button class="btn-ghost" id="newSparkBtn" style="width:auto; padding:12px 16px">Add</button>
+      </div>
+      <div class="hist-list" style="margin-top:8px">${sparkRows}</div>
     `);
-  });
+
+    wrap.querySelectorAll('.good-toggle').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const entry = outcomes.find(o=>o.id===btn.dataset.id);
+        if(entry){ entry.flagged = !entry.flagged; saveOutcomes(); wrap.remove(); openLogSheet(); }
+      });
+    });
+    wrap.querySelectorAll('.spark-x').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        sparks = sparks.filter(s=>s.id!==btn.dataset.id);
+        saveSparks(); wrap.remove(); openLogSheet();
+      });
+    });
+    document.getElementById('newSparkBtn').addEventListener('click', ()=>{
+      const input = document.getElementById('newSparkInput');
+      const val = input.value.trim();
+      if(!val) return;
+      sparks.push({id: uid(), date: todayStr(), text: val, outcomeId: null});
+      saveSparks(); wrap.remove(); openLogSheet();
+    });
+  }
 
   // ---------- boot ----------
   async function boot(){
