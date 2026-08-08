@@ -1,4 +1,3 @@
-<!-- v1.2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,219 +20,90 @@
   *{box-sizing:border-box;}
   html,body{height:100%;}
   body{
-    margin:0;
-    min-height:100dvh;
-    background:var(--white);
-    color:var(--charcoal);
-    font-family:'Inter',system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
+    margin:0; min-height:100dvh; background:var(--white); color:var(--charcoal);
+    font-family:'Inter',system-ui,sans-serif; -webkit-font-smoothing:antialiased;
   }
   .stage{
-    position:relative;
-    min-height:100dvh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
+    position:relative; min-height:100dvh; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
     padding:28px 20px calc(28px + env(safe-area-inset-bottom));
   }
   .card{
-    position:relative;
-    width:100%;
-    max-width:390px;
-    background:var(--white);
-    border:1px solid var(--sage);
-    border-radius:3px;
-    padding:26px 24px 24px;
+    position:relative; width:100%; max-width:390px; background:var(--white);
+    border:1px solid var(--sage); border-radius:3px; padding:26px 24px 24px;
   }
-  /* signature — print registration marks at opposing corners */
   .card::before, .card::after{
-    content:'+';
-    position:absolute;
-    font-family:'Inter',sans-serif;
-    font-size:15px;
-    line-height:1;
-    color:var(--sage);
+    content:'+'; position:absolute; font-family:'Inter',sans-serif; font-size:15px;
+    line-height:1; color:var(--sage);
   }
   .card::before{ top:-8px; left:-8px; }
   .card::after{ bottom:-8px; right:-8px; }
-
-  .masthead{
-    display:flex; align-items:baseline; justify-content:space-between;
-    margin-bottom:12px;
-  }
-  .brand{
-    font-family:'Inter',sans-serif; font-weight:700; font-size:11px;
-    letter-spacing:0.12em; color:var(--forest); text-transform:uppercase;
-  }
-  .tag{
-    font-family:'Inter',sans-serif; font-weight:500; font-size:11px;
-    letter-spacing:0.08em; color:var(--slate); text-transform:uppercase;
-  }
+  .masthead{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; }
+  .brand{ font-family:'Inter',sans-serif; font-weight:700; font-size:11px; letter-spacing:0.12em; color:var(--forest); text-transform:uppercase; }
+  .tag{ font-family:'Inter',sans-serif; font-weight:500; font-size:11px; letter-spacing:0.08em; color:var(--slate); text-transform:uppercase; }
   .rule{ height:1px; background:var(--sage); margin-bottom:22px; }
-
   h1{
-    font-family:'Libre Caslon Display',serif;
-    font-weight:400;
-    font-size:27px;
-    line-height:1.26;
-    letter-spacing:-0.005em;
-    margin:0 0 14px;
-    color:var(--forest);
+    font-family:'Libre Caslon Display',serif; font-weight:400; font-size:27px; line-height:1.26;
+    letter-spacing:-0.005em; margin:0 0 14px; color:var(--forest);
   }
   .sub{
-    font-family:'Libre Caslon Text',serif;
-    font-style:italic;
-    font-weight:400;
-    font-size:14.5px;
-    line-height:1.55;
-    color:var(--charcoal);
-    margin:0 0 26px;
-    opacity:0.85;
+    font-family:'Libre Caslon Text',serif; font-style:italic; font-weight:400; font-size:14.5px;
+    line-height:1.55; color:var(--charcoal); margin:0 0 26px; opacity:0.85;
   }
   .actions{ display:flex; flex-direction:column; gap:10px; }
   .btn-primary{
-    font-family:'Inter',sans-serif;
-    font-weight:600;
-    font-size:13px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--white);
-    background:var(--burgundy);
-    border:none;
-    border-radius:4px;
-    padding:16px 18px;
-    cursor:pointer;
-    width:100%;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13px; letter-spacing:0.06em;
+    text-transform:uppercase; color:var(--white); background:var(--burgundy); border:none;
+    border-radius:4px; padding:16px 18px; cursor:pointer; width:100%;
   }
   .btn-primary:active{ opacity:0.88; }
   .btn-ghost{
-    font-family:'Inter',sans-serif;
-    font-weight:600;
-    font-size:12.5px;
-    letter-spacing:0.05em;
-    text-transform:uppercase;
-    color:var(--charcoal);
-    background:var(--white);
-    border:1px solid var(--sage);
-    border-radius:4px;
-    padding:13px 18px;
-    cursor:pointer;
-    width:100%;
+    font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px; letter-spacing:0.05em;
+    text-transform:uppercase; color:var(--charcoal); background:var(--white);
+    border:1px solid var(--sage); border-radius:4px; padding:13px 18px; cursor:pointer; width:100%;
   }
   .btn-ghost:hover{ border-color:var(--slate); }
-
   .taps{ display:flex; flex-direction:column; gap:16px; margin-bottom:22px; }
   .tap-row .label{
-    font-family:'Inter',sans-serif;
-    font-size:11px; text-transform:uppercase; letter-spacing:0.1em;
+    font-family:'Inter',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.1em;
     color:var(--slate); margin-bottom:8px; display:block; font-weight:600;
   }
   .pills{ display:flex; gap:8px; flex-wrap:wrap; }
   .pill{
-    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600;
-    letter-spacing:0.02em; text-transform:uppercase;
-    color:var(--charcoal); background:var(--white);
-    border:1px solid var(--sage); border-radius:4px;
-    padding:9px 13px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:12.5px; font-weight:600; letter-spacing:0.02em;
+    text-transform:uppercase; color:var(--charcoal); background:var(--white);
+    border:1px solid var(--sage); border-radius:4px; padding:9px 13px; cursor:pointer;
   }
   .pill.active{ color:var(--white); background:var(--forest); border-color:var(--forest); }
-
   .foot{
-    margin-top:18px; display:flex; gap:16px;
-    font-family:'Inter',sans-serif;
-    font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    margin-top:18px; display:flex; flex-wrap:wrap; gap:12px 16px;
+    font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
     color:var(--slate);
   }
-  .foot button{
-    background:none; border:none; color:inherit; font:inherit; cursor:pointer;
-    padding:4px 0;
-  }
+  .foot button{ background:none; border:none; color:inherit; font:inherit; cursor:pointer; padding:4px 0; }
   .foot button:hover{ color:var(--forest); }
-
   .sheet{
     position:fixed; inset:0; z-index:10; background:rgba(32,38,41,0.45);
     display:flex; align-items:flex-end; justify-content:center;
   }
   .sheet-card{
-    width:100%; max-width:430px; background:var(--white);
-    border-top:1px solid var(--sage);
-    padding:22px 22px calc(26px + env(safe-area-inset-bottom));
-    max-height:80dvh; overflow-y:auto;
+    width:100%; max-width:430px; background:var(--white); border-top:1px solid var(--sage);
+    padding:22px 22px calc(26px + env(safe-area-inset-bottom)); max-height:80dvh; overflow-y:auto;
   }
-  .sheet h2{
-    font-family:'Libre Caslon Display',serif; font-weight:400; font-size:20px;
-    color:var(--forest); margin:0 0 6px;
-  }
+  .sheet h2{ font-family:'Libre Caslon Display',serif; font-weight:400; font-size:20px; color:var(--forest); margin:0 0 6px; }
   .sheet p.hint{ font-family:'Inter',sans-serif; font-size:13px; color:var(--slate); margin:0 0 20px; line-height:1.55; }
-  .stat-row{ display:flex; gap:14px; margin-bottom:20px; }
-  .stat{
-    flex:1; background:var(--white); border:1px solid var(--sage);
-    border-radius:3px; padding:14px;
-  }
-  .stat .n{ font-family:'Libre Caslon Display',serif; font-size:26px; color:var(--forest); }
-  .stat .l{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--slate); margin-top:4px; }
-  .dots{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px; }
-  .dot30{ width:9px; height:9px; border-radius:2px; background:var(--sage-faint); }
-  .dot30.on{ background:var(--forest); }
-  .dot30.skip{ background:transparent; border:1px solid var(--sage); }
-  .hist-list{ display:flex; flex-direction:column; max-height:280px; overflow-y:auto; }
-  .hist-row{ display:flex; gap:14px; padding:10px 0; border-bottom:1px solid var(--sage); }
-  .hist-row:last-child{ border-bottom:none; }
-  .hist-date{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--slate); flex:0 0 52px; padding-top:1px; }
-  .hist-body{ flex:1; }
-  .hist-text{ font-family:'Inter',sans-serif; font-size:13.5px; color:var(--charcoal); line-height:1.4; }
-  .hist-outcome{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--slate); margin-top:3px; }
-  .hist-outcome.on{ color:var(--forest); }
-  .spark-input{
-    flex:1; background:var(--white); color:var(--charcoal);
-    border:1px solid var(--sage); border-radius:4px; padding:12px 14px;
-    font-family:'Inter',sans-serif; font-size:13.5px;
-  }
-  .spark-add-row{ display:flex; gap:8px; }
-  .spark-row{ display:flex; align-items:flex-start; gap:14px; padding:10px 0; border-bottom:1px solid var(--sage); }
-  .spark-row:last-child{ border-bottom:none; }
-  .spark-x{ background:none; border:none; color:var(--slate); font-size:13px; cursor:pointer; padding:2px; }
-  .good-toggle{
-    background:none; border:none; padding:0; margin-top:5px; cursor:pointer;
-    font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.04em; text-transform:uppercase;
-    color:var(--slate);
-  }
-  .good-toggle.on{ color:var(--burgundy); }
-  .rec-btn{
-    width:66px; height:66px; border-radius:50%;
-    border:3px solid var(--charcoal); background:none; position:relative; cursor:pointer; padding:0;
-  }
-  .rec-btn::before{
-    content:''; position:absolute; inset:6px; border-radius:50%; background:var(--burgundy);
-    transition:border-radius .15s ease, inset .15s ease;
-  }
-  .rec-btn.recording::before{ border-radius:6px; inset:20px; }
-  .set-row{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 0; border-bottom:1px solid var(--sage);
-  }
+  .set-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--sage); }
   .set-row:last-of-type{ border-bottom:none; }
   .set-row .lab{ font-family:'Inter',sans-serif; font-size:14px; color:var(--charcoal); font-weight:500; }
   .set-row .sub2{ font-family:'Inter',sans-serif; font-size:12px; color:var(--slate); margin-top:2px; }
   select{
-    background:var(--white); color:var(--charcoal);
-    border:1px solid var(--sage); border-radius:4px; padding:8px 10px;
-    font-family:'Inter',sans-serif; font-size:14px;
+    background:var(--white); color:var(--charcoal); border:1px solid var(--sage); border-radius:4px;
+    padding:8px 10px; font-family:'Inter',sans-serif; font-size:14px;
   }
-  .close-x{
-    position:absolute; top:16px; right:16px; background:none; border:none;
-    color:var(--slate); font-size:20px; cursor:pointer; line-height:1;
-  }
+  .close-x{ position:absolute; top:16px; right:16px; background:none; border:none; color:var(--slate); font-size:20px; cursor:pointer; line-height:1; }
   .danger{ color:var(--burgundy); font-family:'Inter',sans-serif; font-weight:600; font-size:12.5px; letter-spacing:0.04em; text-transform:uppercase; background:none; border:none; cursor:pointer; padding:14px 0 0; }
-  video.preview{
-    width:100%; border-radius:3px; margin-bottom:18px; display:block; background:#000;
-    border:1px solid var(--sage);
-  }
-  .loading{
-    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    color:var(--slate); font-family:'Inter',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase;
-  }
+  video.preview{ width:100%; border-radius:3px; margin-bottom:18px; display:block; background:#000; border:1px solid var(--sage); }
+  .loading{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; color:var(--slate); font-family:'Inter',sans-serif; font-size:12px; letter-spacing:0.08em; text-transform:uppercase; }
   .hidden{ display:none !important; }
 </style>
 </head>
@@ -246,7 +116,6 @@
   <div class="foot">
     <button id="btnTaps">Adjust context</button>
     <button id="btnSettings">Nudge time</button>
-    <button id="btnLog">This month</button>
   </div>
 </div>
 
@@ -278,15 +147,12 @@
   ];
 
   const ENERGY_CAP = {low:1, ok:2, good:3};
-  const MIN_CAP = {2:1, 5:2, 15:3};
 
   // ---------- storage ----------
   const OUTCOMES_KEY = 'barry:outcomes';
   const SETTINGS_KEY = 'barry:settings';
-  const SPARKS_KEY = 'barry:sparks';
-  let sparks = [];
   let outcomes = [];
-  let settings = {weekdayHour:17, weekdayMinute:0, weekendHour:11, weekendMinute:0, lastContext:{where:'home', energy:'low', minutes:5}};
+  let settings = {weekdayHour:17, weekendHour:11, lastContext:{where:'home', energy:'low', minutes:5}};
 
   function loadState(){
     try{
@@ -297,14 +163,6 @@
       const raw = localStorage.getItem(SETTINGS_KEY);
       if(raw) settings = Object.assign(settings, JSON.parse(raw));
     }catch(e){ /* keep defaults */ }
-    try{
-      const raw = localStorage.getItem(SPARKS_KEY);
-      if(raw) sparks = JSON.parse(raw);
-    }catch(e){ sparks = []; }
-  }
-  function saveSparks(){
-    try{ localStorage.setItem(SPARKS_KEY, JSON.stringify(sparks)); }
-    catch(e){ console.error('save sparks failed', e); }
   }
   function saveOutcomes(){
     try{ localStorage.setItem(OUTCOMES_KEY, JSON.stringify(outcomes)); }
@@ -373,17 +231,13 @@
   let pendingTapAt = null;
   let pendingObjectUrl = null;
   let pendingFile = null;
-  let lastLoggedEntryId = null;
 
   function todaysEntries(){ return outcomes.filter(o => o.date === todayStr()); }
   function dayIsClosed(){
     return todaysEntries().some(o => ['filmed','smaller_accepted','declined_final'].includes(o.outcome));
   }
-
   function logEntry(partial){
-    const entry = Object.assign({
-      id: uid(), date: todayStr(), tapAt: new Date().toISOString(),
-    }, partial);
+    const entry = Object.assign({ id: uid(), date: todayStr(), tapAt: new Date().toISOString() }, partial);
     outcomes.push(entry);
     saveOutcomes();
     return entry;
@@ -399,7 +253,6 @@
     const ap = h>=12 ? 'PM' : 'AM'; h = h%12; if(h===0) h=12;
     return h+':'+m+ap+' · '+day;
   }
-
   function masthead(tag){
     return `<div class="masthead"><span class="brand">Barry Co.</span><span class="tag">${tag}</span></div><div class="rule"></div>`;
   }
@@ -422,21 +275,15 @@
       <div class="taps">
         <div class="tap-row">
           <span class="label">Where</span>
-          <div class="pills" data-group="where">
-            ${pill('home','Home')}${pill('out','Out / walk')}
-          </div>
+          <div class="pills" data-group="where">${pill('home','Home')}${pill('out','Out / walk')}</div>
         </div>
         <div class="tap-row">
           <span class="label">Energy</span>
-          <div class="pills" data-group="energy">
-            ${pill('low','Low')}${pill('ok','Okay')}${pill('good','Good')}
-          </div>
+          <div class="pills" data-group="energy">${pill('low','Low')}${pill('ok','Okay')}${pill('good','Good')}</div>
         </div>
         <div class="tap-row">
           <span class="label">Minutes you have</span>
-          <div class="pills" data-group="minutes">
-            ${pill('2','2')}${pill('5','5')}${pill('15','15')}
-          </div>
+          <div class="pills" data-group="minutes">${pill('2','2')}${pill('5','5')}${pill('15','15')}</div>
         </div>
       </div>
       <button class="btn-primary" id="btnGo">Show today's assignment</button>
@@ -484,109 +331,9 @@
     document.getElementById('btnNotNow').addEventListener('click', onNotNow);
   }
 
-  let mediaStream = null;
-  let mediaRecorder = null;
-  let recordedChunks = [];
-  let recordTimerInterval = null;
-  let recordStartedAt = null;
-
-  async function onFilmTap(){
+  function onFilmTap(){
     pendingTapAt = new Date().toISOString();
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder){
-      try{
-        mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode:'environment' },
-          audio: true
-        });
-        renderCameraView();
-        return;
-      }catch(e){
-        // permission denied, or unsupported — fall through to native handoff below
-      }
-    }
     document.getElementById('fileInput').click();
-  }
-
-  function pickMimeType(){
-    const candidates = [
-      'video/mp4;codecs=h264,aac', 'video/mp4',
-      'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'
-    ];
-    for(const c of candidates){
-      if(window.MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(c)) return c;
-    }
-    return '';
-  }
-
-  function stopStream(){
-    if(mediaStream){ mediaStream.getTracks().forEach(t=>t.stop()); mediaStream = null; }
-    if(recordTimerInterval){ clearInterval(recordTimerInterval); recordTimerInterval = null; }
-  }
-
-  function renderCameraView(){
-    card.innerHTML = `
-      ${masthead('Recording')}
-      <video id="liveView" autoplay muted playsinline style="width:100%;height:auto;object-fit:contain;border-radius:3px;border:1px solid var(--sage);background:#000;display:block;"></video>
-      <div style="display:flex;justify-content:center;margin-top:18px">
-        <button id="recBtn" class="rec-btn" aria-label="Record"></button>
-      </div>
-      <p class="sub" id="recStatus" style="text-align:center;margin-top:10px">Tap the button to start recording</p>
-      <button class="btn-ghost" id="btnCancelCam" style="margin-top:14px">Cancel</button>
-    `;
-    document.getElementById('liveView').srcObject = mediaStream;
-    document.getElementById('recBtn').addEventListener('click', toggleRecording);
-    document.getElementById('btnCancelCam').addEventListener('click', ()=>{
-      stopStream();
-      renderAssignment();
-    });
-  }
-
-  function toggleRecording(){
-    const btn = document.getElementById('recBtn');
-    if(!mediaRecorder || mediaRecorder.state === 'inactive'){
-      recordedChunks = [];
-      const mimeType = pickMimeType();
-      try{
-        mediaRecorder = mimeType ? new MediaRecorder(mediaStream, {mimeType, videoBitsPerSecond:8000000}) : new MediaRecorder(mediaStream);
-      }catch(e){
-        mediaRecorder = new MediaRecorder(mediaStream);
-      }
-      mediaRecorder.ondataavailable = (e)=>{ if(e.data && e.data.size>0) recordedChunks.push(e.data); };
-      mediaRecorder.onstop = onRecordingStopped;
-      mediaRecorder.start();
-      btn.classList.add('recording');
-      recordStartedAt = Date.now();
-      recordTimerInterval = setInterval(()=>{
-        const secs = Math.floor((Date.now()-recordStartedAt)/1000);
-        const el = document.getElementById('recStatus');
-        if(el) el.textContent = '0:'+String(secs).padStart(2,'0')+' — tap to stop';
-        if(secs >= 20) toggleRecording(); // safety auto-stop
-      }, 250);
-    } else {
-      mediaRecorder.stop();
-      if(recordTimerInterval){ clearInterval(recordTimerInterval); recordTimerInterval = null; }
-    }
-  }
-
-  function onRecordingStopped(){
-    const mimeType = mediaRecorder.mimeType || 'video/mp4';
-    const blob = new Blob(recordedChunks, {type: mimeType});
-    const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
-    const file = new File([blob], 'barry-clip.'+ext, {type: mimeType});
-    stopStream();
-
-    const entry = logEntry({
-      assignmentId: currentAssignment.id, assignmentText: currentAssignment.text,
-      context: Object.assign({},context),
-      outcome: currentTier==='smaller' ? 'smaller_accepted' : 'filmed',
-      tier: currentTier, tapAt: pendingTapAt, capturedAt: new Date().toISOString()
-    });
-    lastLoggedEntryId = entry.id;
-
-    if(pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl);
-    pendingFile = file;
-    pendingObjectUrl = URL.createObjectURL(file);
-    renderCaptured(pendingObjectUrl);
   }
 
   function onNotNow(){
@@ -609,9 +356,7 @@
         btn.textContent = 'Saved';
         return;
       }
-    }catch(e){
-      // user cancelled the share sheet, or it's unsupported — fall through to instructions
-    }
+    }catch(e){ /* cancelled or unsupported — fall through to instructions */ }
     btn.textContent = 'Press & hold the video above, then "Save Video"';
   }
 
@@ -622,33 +367,21 @@
       <video class="preview" src="${objectUrl}" playsinline muted autoplay loop controls></video>
       <button class="btn-primary" id="btnSave">Save to Photos</button>
       <p class="sub" style="margin-top:14px">If the button doesn't open a save option, press and hold the video above and choose "Save Video" — do this before you leave this screen, or the clip can't be recovered.</p>
-      <div class="tap-row" style="margin-top:18px">
-        <span class="label">Remind you of something? (optional)</span>
-        <input type="text" id="sparkInput" class="spark-input" placeholder="e.g. that reel PJ sent me..." maxlength="140" />
-      </div>
       <button class="btn-ghost" id="btnDone" style="margin-top:14px">Done</button>
     `;
     document.getElementById('btnSave').addEventListener('click', (e)=>onSaveToPhotos(e.currentTarget));
-    document.getElementById('btnDone').addEventListener('click', ()=>{
-      const val = document.getElementById('sparkInput').value.trim();
-      if(val){
-        sparks.push({id: uid(), date: todayStr(), text: val, outcomeId: lastLoggedEntryId});
-        saveSparks();
-      }
-      renderClosed();
-    });
+    document.getElementById('btnDone').addEventListener('click', renderClosed);
   }
 
   document.getElementById('fileInput').addEventListener('change', function(e){
     const file = e.target.files && e.target.files[0];
     if(!file){ return; }
-    const entry = logEntry({
+    logEntry({
       assignmentId: currentAssignment.id, assignmentText: currentAssignment.text,
       context: Object.assign({},context),
       outcome: currentTier==='smaller' ? 'smaller_accepted' : 'filmed',
       tier: currentTier, tapAt: pendingTapAt, capturedAt: new Date().toISOString()
     });
-    lastLoggedEntryId = entry.id;
     if(pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl);
     pendingFile = file;
     pendingObjectUrl = URL.createObjectURL(file);
@@ -656,13 +389,11 @@
     e.target.value = '';
   });
 
-  // ---------- sheets: taps / settings / log ----------
+  // ---------- sheets ----------
   function openSheet(html){
     const wrap = document.createElement('div');
     wrap.className = 'sheet';
-    wrap.id = 'sheetWrap';
-    wrap.innerHTML = `<div class="sheet-card" style="position:relative">
-      <button class="close-x" id="sheetClose">✕</button>${html}</div>`;
+    wrap.innerHTML = `<div class="sheet-card" style="position:relative"><button class="close-x" id="sheetClose">✕</button>${html}</div>`;
     document.body.appendChild(wrap);
     wrap.addEventListener('click', (e)=>{ if(e.target===wrap) wrap.remove(); });
     document.getElementById('sheetClose').addEventListener('click', ()=>wrap.remove());
@@ -676,21 +407,14 @@
     const wrap = openSheet(`
       <h2>Nudge time</h2>
       <p class="hint">Barry can't send push notifications from this prototype yet — set the time you'd like to be reminded, and use it for your own phone alarm or reminder until that's built.</p>
-      <div class="set-row">
-        <div><div class="lab">Weekdays</div><div class="sub2">Default 5:00pm</div></div>
-        <select id="wdH"></select>
-      </div>
-      <div class="set-row">
-        <div><div class="lab">Weekends</div><div class="sub2">Default 11:00am</div></div>
-        <select id="weH"></select>
-      </div>
+      <div class="set-row"><div><div class="lab">Weekdays</div><div class="sub2">Default 5:00pm</div></div><select id="wdH"></select></div>
+      <div class="set-row"><div><div class="lab">Weekends</div><div class="sub2">Default 11:00am</div></div><select id="weH"></select></div>
       <button class="danger" id="clearLog">Clear all logged data</button>
     `);
     function fillHours(sel, current){
       for(let h=0; h<24; h++){
         const opt = document.createElement('option');
-        const label = (h%12===0?12:h%12) + (h<12?'am':'pm');
-        opt.value = h; opt.textContent = label;
+        opt.value = h; opt.textContent = (h%12===0?12:h%12) + (h<12?'am':'pm');
         if(h===current) opt.selected = true;
         sel.appendChild(opt);
       }
@@ -709,104 +433,13 @@
     });
   });
 
-  document.getElementById('btnLog').addEventListener('click', openLogSheet);
-
-  function openLogSheet(){
-    const now = new Date();
-    const monthEntries = outcomes.filter(o=>{
-      const d = new Date(o.date+'T00:00:00');
-      return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    });
-    const activeDays = new Set(monthEntries.map(o=>o.date));
-    const filmedDays = new Set(monthEntries.filter(o=>['filmed','smaller_accepted'].includes(o.outcome)).map(o=>o.date));
-    const rate = activeDays.size ? Math.round(100*filmedDays.size/activeDays.size) : 0;
-
-    let dots = '';
-    for(let i=29;i>=0;i--){
-      const d = new Date(); d.setDate(d.getDate()-i);
-      const ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-      if(outcomes.some(o=>o.date===ds && ['filmed','smaller_accepted'].includes(o.outcome))) dots += '<span class="dot30 on"></span>';
-      else if(activeDays.has(ds)) dots += '<span class="dot30"></span>';
-      else dots += '<span class="dot30 skip"></span>';
-    }
-
-    const OUTCOME_LABEL = {filmed:'Filmed', smaller_accepted:'Filmed (smaller)', not_now:'Skipped', declined_final:'Skipped'};
-    const history = outcomes.slice().sort((a,b)=> (b.date+b.tapAt).localeCompare(a.date+a.tapAt)).slice(0,40);
-    const historyRows = history.length ? history.map(o=>{
-      const d = new Date(o.date+'T00:00:00');
-      const dayLabel = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
-      const timeLabel = o.capturedAt ? new Date(o.capturedAt).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}) : '';
-      const filmed = o.outcome==='filmed' || o.outcome==='smaller_accepted';
-      const goodBtn = filmed ? `<button class="good-toggle${o.flagged?' on':''}" data-id="${o.id}">${o.flagged ? '★ Good one' : '☆ Mark good'}</button>` : '';
-      return `<div class="hist-row">
-        <div class="hist-date">${dayLabel}${timeLabel?'<br>'+timeLabel:''}</div>
-        <div class="hist-body">
-          <div class="hist-text">${o.assignmentText}</div>
-          <div class="hist-outcome${filmed?' on':''}">${OUTCOME_LABEL[o.outcome] || o.outcome}</div>
-          ${goodBtn}
-        </div>
-      </div>`;
-    }).join('') : `<p class="hint">Nothing logged yet.</p>`;
-
-    const sparkRows = sparks.length ? sparks.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(s=>{
-      const d = new Date(s.date+'T00:00:00');
-      const dayLabel = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
-      return `<div class="spark-row"><div class="hist-date">${dayLabel}</div><div class="hist-body"><div class="hist-text">${s.text}</div></div><button class="spark-x" data-id="${s.id}">✕</button></div>`;
-    }).join('') : `<p class="hint">No sparks yet — jot one when a clip reminds you of something.</p>`;
-
-    const wrap = openSheet(`
-      <h2>This month</h2>
-      <p class="hint">No streaks here — just what happened.</p>
-      <div class="stat-row">
-        <div class="stat"><div class="n">${filmedDays.size}</div><div class="l">Clips captured</div></div>
-        <div class="stat"><div class="n">${rate}%</div><div class="l">Start rate</div></div>
-      </div>
-      <div class="dots">${dots}</div>
-      <p class="hint" style="margin-top:-6px">Filled = filmed · outline = shown, not filmed · empty = quiet day</p>
-      <div class="rule" style="margin:20px 0"></div>
-      <p class="hint" style="margin-bottom:12px">History</p>
-      <div class="hist-list">${historyRows}</div>
-      <div class="rule" style="margin:20px 0"></div>
-      <p class="hint" style="margin-bottom:10px">Sparks — things a clip reminded you of</p>
-      <div class="spark-add-row">
-        <input type="text" id="newSparkInput" class="spark-input" placeholder="Add one..." maxlength="140" />
-        <button class="btn-ghost" id="newSparkBtn" style="width:auto; padding:12px 16px">Add</button>
-      </div>
-      <div class="hist-list" style="margin-top:8px">${sparkRows}</div>
-    `);
-
-    wrap.querySelectorAll('.good-toggle').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        const entry = outcomes.find(o=>o.id===btn.dataset.id);
-        if(entry){ entry.flagged = !entry.flagged; saveOutcomes(); wrap.remove(); openLogSheet(); }
-      });
-    });
-    wrap.querySelectorAll('.spark-x').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        sparks = sparks.filter(s=>s.id!==btn.dataset.id);
-        saveSparks(); wrap.remove(); openLogSheet();
-      });
-    });
-    document.getElementById('newSparkBtn').addEventListener('click', ()=>{
-      const input = document.getElementById('newSparkInput');
-      const val = input.value.trim();
-      if(!val) return;
-      sparks.push({id: uid(), date: todayStr(), text: val, outcomeId: null});
-      saveSparks(); wrap.remove(); openLogSheet();
-    });
-  }
-
   // ---------- boot ----------
   async function boot(){
     loadState();
     context = Object.assign({where:'home', energy:'low', minutes:5}, settings.lastContext);
     document.getElementById('loading').classList.add('hidden');
     document.getElementById('stage').classList.remove('hidden');
-    if(dayIsClosed()){
-      renderClosed();
-    } else {
-      renderTapsGate();
-    }
+    if(dayIsClosed()){ renderClosed(); } else { renderTapsGate(); }
   }
   boot();
 
