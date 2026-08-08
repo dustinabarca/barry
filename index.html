@@ -177,6 +177,14 @@
   .dot30{ width:9px; height:9px; border-radius:2px; background:var(--sage-faint); }
   .dot30.on{ background:var(--forest); }
   .dot30.skip{ background:transparent; border:1px solid var(--sage); }
+  .hist-list{ display:flex; flex-direction:column; max-height:280px; overflow-y:auto; }
+  .hist-row{ display:flex; gap:14px; padding:10px 0; border-bottom:1px solid var(--sage); }
+  .hist-row:last-child{ border-bottom:none; }
+  .hist-date{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--slate); flex:0 0 52px; padding-top:1px; }
+  .hist-body{ flex:1; }
+  .hist-text{ font-family:'Inter',sans-serif; font-size:13.5px; color:var(--charcoal); line-height:1.4; }
+  .hist-outcome{ font-family:'Inter',sans-serif; font-size:11px; letter-spacing:0.05em; text-transform:uppercase; color:var(--slate); margin-top:3px; }
+  .hist-outcome.on{ color:var(--forest); }
   .set-row{
     display:flex; align-items:center; justify-content:space-between;
     padding:12px 0; border-bottom:1px solid var(--sage);
@@ -288,7 +296,7 @@
 
   // ---------- selection ----------
   function pickAssignment(context, tier){
-    const cap = Math.min(ENERGY_CAP[context.energy], MIN_CAP[context.minutes]);
+    const cap = ENERGY_CAP[context.energy];
     const wantEffort = tier === 'smaller' ? 1 : null;
     let pool = BANK.filter(a => a.where.includes(context.where) && a.effort <= cap && (wantEffort ? a.effort===wantEffort : true));
 
@@ -330,6 +338,7 @@
   let currentTier = 'primary';
   let pendingTapAt = null;
   let pendingObjectUrl = null;
+  let pendingFile = null;
 
   function todaysEntries(){ return outcomes.filter(o => o.date === todayStr()); }
   function dayIsClosed(){
@@ -366,7 +375,9 @@
       ${masthead('Logged')}
       <h1>${success ? "Got today's clip." : "That's alright."}</h1>
       <p class="sub">${success ? "It's in the archive. Nothing to post, nothing to edit." : "See you tomorrow."}</p>
+      <button class="btn-ghost" id="btnAnother" style="margin-top:4px">Feeling it? Do one more.</button>
     `;
+    document.getElementById('btnAnother').addEventListener('click', renderTapsGate);
   }
 
   function renderTapsGate(){
@@ -416,13 +427,19 @@
     });
   }
 
+  function pacingNote(minutes){
+    if(minutes >= 15) return "You've got the time — let this one run longer than feels natural.";
+    if(minutes >= 5) return "No need to rush this one.";
+    return "Quick — don't overthink it.";
+  }
+
   function renderAssignment(){
     const a = currentAssignment;
     const smallerLabel = currentTier === 'smaller';
     card.innerHTML = `
       ${masthead(smallerLabel ? 'Alt · ' + bankNumber(a) : bankNumber(a))}
       <h1>${a.text}</h1>
-      <p class="sub">${a.sub}</p>
+      <p class="sub">${a.sub} ${pacingNote(context.minutes)}</p>
       <div class="actions">
         <button class="btn-primary" id="btnFilm">Film it</button>
         <button class="btn-ghost" id="btnNotNow">${smallerLabel ? 'Not today' : 'Not now'}</button>
@@ -449,14 +466,30 @@
     }
   }
 
+  async function onSaveToPhotos(btn){
+    if(!pendingFile){ return; }
+    try{
+      if(navigator.canShare && navigator.canShare({files:[pendingFile]})){
+        await navigator.share({files:[pendingFile], title:'Barry clip'});
+        btn.textContent = 'Saved';
+        return;
+      }
+    }catch(e){
+      // user cancelled the share sheet, or it's unsupported — fall through to instructions
+    }
+    btn.textContent = 'Press & hold the video above, then "Save Video"';
+  }
+
   function renderCaptured(objectUrl){
     card.innerHTML = `
       ${masthead('Logged')}
       <h1>That's today's clip.</h1>
       <video class="preview" src="${objectUrl}" playsinline muted autoplay loop controls></video>
-      <p class="sub">It's still just on your phone — nothing was uploaded or saved anywhere by Barry.</p>
-      <button class="btn-primary" id="btnDone">Done</button>
+      <button class="btn-primary" id="btnSave">Save to Photos</button>
+      <p class="sub" style="margin-top:14px">If the button doesn't open a save option, press and hold the video above and choose "Save Video" — do this before you leave this screen, or the clip can't be recovered.</p>
+      <button class="btn-ghost" id="btnDone" style="margin-top:6px">Done</button>
     `;
+    document.getElementById('btnSave').addEventListener('click', (e)=>onSaveToPhotos(e.currentTarget));
     document.getElementById('btnDone').addEventListener('click', renderClosed);
   }
 
@@ -470,6 +503,7 @@
       tier: currentTier, tapAt: pendingTapAt, capturedAt: new Date().toISOString()
     });
     if(pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl);
+    pendingFile = file;
     pendingObjectUrl = URL.createObjectURL(file);
     renderCaptured(pendingObjectUrl);
     e.target.value = '';
@@ -488,13 +522,7 @@
     return wrap;
   }
 
-  document.getElementById('btnTaps').addEventListener('click', ()=>{
-    if(dayIsClosed()){
-      openSheet(`<h2>Already answered today</h2><p class="hint">Context adjusts again tomorrow — or clear the log under "nudge time" if you want a redo today.</p>`);
-      return;
-    }
-    renderTapsGate();
-  });
+  document.getElementById('btnTaps').addEventListener('click', renderTapsGate);
 
   document.getElementById('btnSettings').addEventListener('click', ()=>{
     const s = settings;
@@ -553,6 +581,21 @@
       else dots += '<span class="dot30 skip"></span>';
     }
 
+    const OUTCOME_LABEL = {filmed:'Filmed', smaller_accepted:'Filmed (smaller)', not_now:'Skipped', declined_final:'Skipped'};
+    const history = outcomes.slice().sort((a,b)=> (b.date+b.tapAt).localeCompare(a.date+a.tapAt)).slice(0,40);
+    const historyRows = history.length ? history.map(o=>{
+      const d = new Date(o.date+'T00:00:00');
+      const dayLabel = d.toLocaleDateString(undefined,{month:'short',day:'numeric'});
+      const filmed = o.outcome==='filmed' || o.outcome==='smaller_accepted';
+      return `<div class="hist-row">
+        <div class="hist-date">${dayLabel}</div>
+        <div class="hist-body">
+          <div class="hist-text">${o.assignmentText}</div>
+          <div class="hist-outcome${filmed?' on':''}">${OUTCOME_LABEL[o.outcome] || o.outcome}</div>
+        </div>
+      </div>`;
+    }).join('') : `<p class="hint">Nothing logged yet.</p>`;
+
     openSheet(`
       <h2>This month</h2>
       <p class="hint">No streaks here — just what happened.</p>
@@ -562,6 +605,9 @@
       </div>
       <div class="dots">${dots}</div>
       <p class="hint" style="margin-top:-6px">Filled = filmed · outline = shown, not filmed · empty = quiet day</p>
+      <div class="rule" style="margin:20px 0"></div>
+      <p class="hint" style="margin-bottom:12px">History</p>
+      <div class="hist-list">${historyRows}</div>
     `);
   });
 
